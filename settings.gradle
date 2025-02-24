@@ -1,0 +1,2 @@
+rootProject.name = 'omnia'
+include 'sdk', 'daemon', 'transport'
