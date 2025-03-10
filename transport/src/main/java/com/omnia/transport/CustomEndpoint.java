@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT> {
     private final Endpoint<RequestT, ResponseT, ErrorT> endpoint;
     private final OmniaSDK sdk;
+
     public CustomEndpoint(Endpoint<RequestT, ResponseT, ErrorT> endpoint, OmniaSDK sdk) {
-        this.endpoint = endpoint; this.sdk = sdk;
+        this.endpoint = endpoint;
+        this.sdk = sdk;
     }
 
     @Override
