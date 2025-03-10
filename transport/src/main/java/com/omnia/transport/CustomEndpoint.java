@@ -1,15 +1,15 @@
-package transport;
+package com.omnia.transport;
 
 //import com.omnia.sdk;
+
 import org.opensearch.client.json.JsonpDeserializer;
-import org.opensearch.client.opensearch._types.ErrorResponse;
-import org.opensearch.client.transport.endpoints.SimpleEndpoint;
+import org.opensearch.client.transport.Endpoint;
 
 import java.util.Map;
-import java.util.function.Function;
 
 public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT> {
     Endpoint<RequestT, ResponseT, ErrorT> endpoint;
+
     public CustomEndpoint(Endpoint<RequestT, ResponseT, ErrorT> endpoint) {
         this.endpoint = endpoint;
     }
@@ -20,11 +20,12 @@ public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Req
     }
 
     @Override
-    public String requestUrl(RequestT request){
+    public String requestUrl(RequestT request) {
         return transformIndexId(endpoint.requestUrl(request));
     }
+
     @Override
-    public Map<String, String> queryParameters(RequestT request){
+    public Map<String, String> queryParameters(RequestT request) {
         return addIndexFilter(endpoint.queryParameters(request), endpoint.requestUrl(request));
     }
 
