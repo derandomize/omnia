@@ -1,7 +1,9 @@
 package com.omnia.sdk;
 
+import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
+import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 import org.opensearch.client.opensearch.core.SearchRequest;
 
 
@@ -35,7 +37,14 @@ public interface OmniaSDK {
      * @param indexId Target index to get filter for
      * @return  {@link Query} containing index-specific filter
      */
-    Query getIndexFilter(String indexId);
+    default Query getIndexFilter(String indexId) {
+        String filterField = getFilterField();
+        TermQuery termQuery = new TermQuery.Builder()
+                .field(filterField)
+                .value(FieldValue.of(indexId))
+                .build();
+        return new Query.Builder().term(termQuery).build();
+    }
 
     /**
      * Combines an existing query with index-specific filter
