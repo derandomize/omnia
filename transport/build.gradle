@@ -1,7 +1,18 @@
+
 plugins {
     id 'java'
 }
 
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    implementation project(":sdk")
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'org.opensearch.client:opensearch-rest-client:2.19.1'
+    implementation 'org.opensearch.client:opensearch-java:2.6.0'
 }
