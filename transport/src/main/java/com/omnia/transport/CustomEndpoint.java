@@ -5,13 +5,16 @@ package com.omnia.transport;
 import org.opensearch.client.json.JsonpDeserializer;
 import org.opensearch.client.transport.Endpoint;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT> {
-    Endpoint<RequestT, ResponseT, ErrorT> endpoint;
-
-    public CustomEndpoint(Endpoint<RequestT, ResponseT, ErrorT> endpoint) {
-        this.endpoint = endpoint;
+    private final Endpoint<RequestT, ResponseT, ErrorT> endpoint;
+    private final OmniaSDK sdk;
+    public CustomEndpoint(Endpoint<RequestT, ResponseT, ErrorT> endpoint, OmniaSDK sdk) {
+        this.endpoint = endpoint; this.sdk = sdk;
     }
 
     @Override
@@ -20,13 +23,15 @@ public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Req
     }
 
     @Override
-    public String requestUrl(RequestT request) {
-        return transformIndexId(endpoint.requestUrl(request));
+    public String requestUrl(RequestT request) throws IllegalArgumentException {
+        List<String> Indecies = parseUrl(endpoint.requestUrl(request));
+        Indecies = Indecies.stream().map(index -> sdk.transformIndexId(index)).collect(Collectors.toList());
+        return "/" + String.join("%2C", Indecies);
     }
 
     @Override
     public Map<String, String> queryParameters(RequestT request) {
-        return addIndexFilter(endpoint.queryParameters(request), endpoint.requestUrl(request));
+        return sdk.addIndexFilter(endpoint.queryParameters(request), endpoint.requestUrl(request));
     }
 
     @Override
@@ -44,4 +49,12 @@ public class CustomEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Req
         return endpoint.errorDeserializer(statusCode);
     }
 
+    //Вероятно это не правда... я не уверен
+    private List<String> parseUrl(String path) {
+        List<String> parsePath = List.of(path.split("/"));
+        if (parsePath.getFirst() == null) {
+            throw new IllegalArgumentException();
+        }
+        return List.of(parsePath.getFirst().split("%2C"));
+    }
 }
