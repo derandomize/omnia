@@ -10,24 +10,24 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-public class CustomTransport implements Transport {
+public class OmniaTransport implements Transport {
     private final Transport delegate;
     private final OmniaSDK sdk;
 
-    public CustomTransport(Transport delegate, OmniaSDK sdk) {
+    public OmniaTransport(Transport delegate, OmniaSDK sdk) {
         this.delegate = delegate;
         this.sdk = sdk;
     }
 
     @Override
     public <RequestT, ResponseT, ErrorT> ResponseT performRequest(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) throws IOException {
-        final CustomEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new CustomEndpoint<>(endpoint, sdk);
+        final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
         return delegate.performRequest(request, customEndpoint, options);
     }
 
     @Override
     public <RequestT, ResponseT, ErrorT> CompletableFuture<ResponseT> performRequestAsync(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) {
-        final CustomEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new CustomEndpoint<>(endpoint, sdk);
+        final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
         return delegate.performRequestAsync(request, customEndpoint, options);
     }
 
