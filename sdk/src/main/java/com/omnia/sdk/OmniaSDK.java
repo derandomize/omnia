@@ -8,6 +8,7 @@ import org.opensearch.client.opensearch.core.SearchRequest;
 
 
 import java.io.File;
+import java.util.Map;
 
 public interface OmniaSDK {
     /**
@@ -31,6 +32,21 @@ public interface OmniaSDK {
      * @return Field in OpenSearch
      */
     String getFilterField();
+
+    /**
+     * Combines an existing query params with index-specific filter
+     * @param params is endpoint.queryParams()
+     * @param indexId Target index to get filter from
+     * @return params with filter
+     */
+    default Map<String, String> addQueryParamsFilter(Map<String, String> params, String indexId) {
+        // TODO
+        /*
+        Тут некоторая беда с тем, что фильтрацию можно сделать как через параметр q,
+        так и через query. При чём если указан query то q игнорируется
+         */
+        return params;
+    }
 
     /**
      * Retrieves the base filter query for the specified index
