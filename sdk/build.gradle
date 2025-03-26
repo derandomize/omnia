@@ -16,9 +16,10 @@ ext {
 }
 
 dependencies {
+    implementation project(":common")
+
     // OpenSearch
     implementation "org.opensearch.client:opensearch-java:$opensearchVersion"
-
 
     // JUnit 5
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
@@ -35,3 +36,4 @@ java {
 test {
     useJUnitPlatform()
 }
+

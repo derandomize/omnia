@@ -7,11 +7,18 @@ repositories {
 }
 
 ext {
+    snakeyamlVersion = '2.4'
+    hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
 }
 
+
 dependencies {
-    implementation project(":common")
+    // SnakeYAML
+    implementation "org.yaml:snakeyaml:$snakeyamlVersion"
+
+    // HikariCP
+    implementation "com.zaxxer:HikariCP:$hikariVersion"
 
     // JUnit 5
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
