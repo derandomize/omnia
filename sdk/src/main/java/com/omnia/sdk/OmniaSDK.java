@@ -6,20 +6,9 @@ import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 import org.opensearch.client.opensearch.core.SearchRequest;
 
-
-import java.io.File;
 import java.util.Map;
 
 public interface OmniaSDK {
-    /**
-     * Creates OmniaSDK instance from config file.
-     * Throws exception if failed to connect to Postgresql
-     *
-     * @param config Config file
-     * @return Instance of OmniaSDK with this config file
-     */
-    OmniaSDK fromConfig(File config);
-
     /**
      * Transforms an index ID to commune ID
      * @param indexId The original index identifier to transform
