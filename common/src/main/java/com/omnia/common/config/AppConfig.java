@@ -1,6 +1,6 @@
-package com.omnia.migrator.config;
+package com.omnia.common.config;
 
-import com.omnia.migrator.config.db.Database;
+import com.omnia.common.config.db.Database;
 
 public class AppConfig {
     private Config config;

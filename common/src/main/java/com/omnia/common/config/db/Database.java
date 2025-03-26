@@ -1,4 +1,4 @@
-package com.omnia.migrator.config.db;
+package com.omnia.common.config.db;
 
 import java.util.Map;
 
