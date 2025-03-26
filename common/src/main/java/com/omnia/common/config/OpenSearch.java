@@ -1,4 +1,4 @@
-package com.omnia.migrator.config;
+package com.omnia.common.config;
 
 public class OpenSearch {
     private String host;
