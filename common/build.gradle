@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'nu.studer.jooq' version '10.0' // Jooq plugin
 }
 
 repositories {
@@ -7,6 +8,8 @@ repositories {
 }
 
 ext {
+    postgresqlVersion = '42.7.5'
+    jooqVersion = '3.20.2'
     snakeyamlVersion = '2.4'
     hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
@@ -14,6 +17,12 @@ ext {
 
 
 dependencies {
+    // PostgreSQL driver
+    implementation "org.postgresql:postgresql:$postgresqlVersion"
+
+    // Jooq
+    implementation "org.jooq:jooq:$jooqVersion"
+
     // SnakeYAML
     implementation "org.yaml:snakeyaml:$snakeyamlVersion"
 
@@ -24,6 +33,30 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
+
+jooq {
+    configurations {
+        main {
+            generationTool {
+                jdbc {
+                    driver = 'org.h2.Driver' // Using H2 for code generation
+                    url = 'jdbc:h2:mem:test;MODE=PostgreSQL;INIT=RUNSCRIPT FROM \'src/main/resources/schema.sql\''
+                }
+                generator {
+                    database {
+                        name = 'org.jooq.meta.h2.H2Database'
+                        includes = '.*'
+                    }
+                    target {
+                        packageName = 'com.example.jooq'
+                        directory = 'build/generated-src/jooq/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 test {
     useJUnitPlatform()
