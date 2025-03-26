@@ -48,7 +48,7 @@ jooq {
                         includes = '.*'
                     }
                     target {
-                        packageName = 'com.example.jooq'
+                        packageName = 'com.omnia.jooq'
                         directory = 'build/generated-src/jooq/main'
                     }
                 }
