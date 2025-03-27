@@ -2,7 +2,30 @@ plugins {
     id 'java'
 }
 
+group = 'com.omnia'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.12.0'
+    opensearchVersion = '2.9.0'
+}
+
+
 dependencies {
     implementation project(":common")
     implementation project(":sdk")
+
+    // OpenSearch
+    implementation "org.opensearch.client:opensearch-java:$opensearchVersion"
+
+    // JUnit 5
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+test {
+    useJUnitPlatform()
 }
