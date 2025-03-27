@@ -4,14 +4,17 @@ public class Config {
     private Boolean preferLocal = true;
     private String configTableName = "omnia_config";
     private String featureName = "omnia_id";
+    private long threshold = 10000;
+
+    public long getThreshold() { return threshold; }
+
+    public void setThreshold(long threshold) { this.threshold = threshold; }
 
     public Boolean getPreferLocal() {
         return preferLocal;
     }
 
-    public void setPrefer_local(Boolean preferLocal) {
-        this.preferLocal = preferLocal;
-    }
+    public void setPreferLocal(Boolean preferLocal) { this.preferLocal = preferLocal; }
 
     public String getConfigTableName() {
         return configTableName;
