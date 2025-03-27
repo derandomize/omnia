@@ -11,12 +11,20 @@ repositories {
 }
 
 ext {
+    jooqVersion = '3.19.7'
+    hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
     opensearchVersion = '2.9.0'
 }
 
 dependencies {
     implementation project(":common")
+
+    // JOOQ
+    implementation "org.jooq:jooq:$jooqVersion"
+
+    // HikariCP
+    implementation "com.zaxxer:HikariCP:$hikariVersion"
 
     // OpenSearch
     implementation "org.opensearch.client:opensearch-java:$opensearchVersion"
