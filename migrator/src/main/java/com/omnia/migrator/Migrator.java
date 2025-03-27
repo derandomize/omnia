@@ -12,7 +12,7 @@ public interface Migrator extends AutoCloseable {
      * @return Migrator
      */
     static Migrator getInstance(AppConfig config) {
-        return null;
+        throw new UnsupportedOperationException("getInstance method is not yet implemented");
     }
 
     /**
