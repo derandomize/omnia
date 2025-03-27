@@ -85,7 +85,7 @@ public class Main {
         String configFile;
 
         @Parameter(names = "--help", help = true)
-        private final boolean help = true;
+        private boolean help = false;
     }
 
     @Parameters(commandDescription = "Show info about Migrator state")
