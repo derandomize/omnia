@@ -32,7 +32,7 @@ public class YamlParser {
         validateField(openSearch.getPassword(), "open_search", "password");
 
         if (config.getDatabase() == null) {
-            throw new IllegalArgumentException("OpenSearch section is missing");
+            throw new IllegalArgumentException("Database section is missing");
         }
         Database db = config.getDatabase();
         if (db.getType().equalsIgnoreCase("postgresql")) {
