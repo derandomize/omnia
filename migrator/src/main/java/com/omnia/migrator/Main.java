@@ -2,61 +2,127 @@ package com.omnia.migrator;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.omnia.migrator.config.AppConfig;
-import com.omnia.migrator.config.YamlParser;
-import com.omnia.migrator.config.db.PostgresqlParams;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.beust.jcommander.Parameters;
+import com.omnia.common.config.AppConfig;
+import com.omnia.common.config.YamlParser;
 
 import java.io.FileInputStream;
-import java.sql.Connection;
+import java.util.List;
 
 public class Main {
-    private static Args parseArgs(String[] args) {
-        Args parsedArgs = new Args();
-        JCommander jCommander = JCommander.newBuilder().addObject(parsedArgs).build();
+    static Arguments arguments = new Arguments();
+    private static MigratorCommand command = null;
+
+    private static void parseCli(String[] args) {
+        JCommander jCommander = JCommander.newBuilder()
+                .addObject(arguments)
+                .addCommand(InfoCommand.name, arguments.infoCommand)
+                .addCommand(MigrateCommand.name, arguments.migrateCommand)
+                .addCommand(MigrateAllCommand.name, arguments.migrateAllCommand)
+                .build();
+
         jCommander.parse(args);
-        jCommander.setProgramName("Migrator");
-        if (parsedArgs.help) {
+
+        if (arguments.help) {
             jCommander.usage();
             System.exit(0);
         }
-        return parsedArgs;
 
+        String parsedCommand = jCommander.getParsedCommand();
+
+
+        switch (parsedCommand) {
+            case InfoCommand.name:
+                command = arguments.infoCommand;
+                break;
+            case MigrateCommand.name:
+                command = arguments.migrateCommand;
+                break;
+            case MigrateAllCommand.name:
+                command = arguments.migrateAllCommand;
+                break;
+            default:
+                System.err.println("Unknown command: " + parsedCommand);
+                System.exit(1);
+        }
     }
+
+    private static AppConfig parseConfig(String configFileName) {
+        try (FileInputStream configFile = new FileInputStream(configFileName)) {
+            return YamlParser.parseYaml(configFile);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return null;
+    }
+
 
     public static void main(String[] args) {
-        Args parsedArgs = parseArgs(args);
-        AppConfig config;
-        try (FileInputStream configFile = new FileInputStream(parsedArgs.configFile)) {
-            config = YamlParser.parseYaml(configFile);
+        parseCli(args);
+        AppConfig config = parseConfig(arguments.configFile);
+
+        assert command != null;
+        try (Migrator migrator = Migrator.getInstance(config)) {
+            command.execute(migrator);
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            return;
-        }
-
-        PostgresqlParams dbParams = (PostgresqlParams) config.getDatabase().getResolvedParams();
-
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setDataSourceClassName(org.postgresql.ds.PGSimpleDataSource.class.getName());
-        hikariConfig.addDataSourceProperty("server", dbParams.getHost());
-        hikariConfig.addDataSourceProperty("portNumber", dbParams.getPort());
-        hikariConfig.addDataSourceProperty("databaseName", dbParams.getDatabaseName());
-        hikariConfig.addDataSourceProperty("user", dbParams.getUsername());
-        hikariConfig.addDataSourceProperty("password", dbParams.getPassword());
-
-        try (HikariDataSource dataSource = new HikariDataSource(hikariConfig)) {
-            Connection connection = dataSource.getConnection();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    public static class Args {
-        @Parameter(names = {"--config", "-c"}, description = "Config file for app")
+    public interface MigratorCommand {
+        void execute(Migrator migrator) throws Exception;
+    }
+
+    @Parameters(commandDescription = "Main command")
+    public static class Arguments {
+        public InfoCommand infoCommand = new InfoCommand();
+        public MigrateCommand migrateCommand = new MigrateCommand();
+        public MigrateAllCommand migrateAllCommand = new MigrateAllCommand();
+
+        @Parameter(names = {"--config", "-c"}, description = "Config file path for app")
         String configFile;
 
         @Parameter(names = "--help", help = true)
         private final boolean help = true;
+    }
+
+    @Parameters(commandDescription = "Show info about Migrator state")
+    public static class InfoCommand implements MigratorCommand {
+        static public final String name = "info";
+
+        @Override
+        public void execute(Migrator migrator) throws Exception {
+            List<CommuneId> communeIds = migrator.scan();
+            long communesSize = migrator.countCommunes();
+
+            System.out.println("Successfully connected to OpenSearch and Postgresql");
+            System.out.printf("Communes (overflown/total): %d/%d\n", communeIds.size(), communesSize);
+        }
+    }
+
+    @Parameters(commandDescription = "Migrate overflown from given communes")
+    public static class MigrateCommand implements MigratorCommand {
+        static public final String name = "migrate";
+
+        @Parameter(description = "Commune migration ids")
+        public List<String> migrateIds;
+
+        @Override
+        public void execute(Migrator migrator) throws Exception {
+            for (String migrateId : migrateIds) {
+                migrator.migrate(CommuneId.fromString(migrateId));
+            }
+        }
+    }
+
+    @Parameters(commandDescription = "Migrate all overflown communes")
+    public static class MigrateAllCommand implements MigratorCommand {
+        static public final String name = "migrate-all";
+
+        public void execute(Migrator migrator) throws Exception {
+            migrator.migrateAll();
+        }
     }
 }
