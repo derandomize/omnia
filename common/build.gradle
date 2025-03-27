@@ -1,7 +1,10 @@
 plugins {
     id 'java'
-    id 'nu.studer.jooq' version '10.0' // Jooq plugin
+    id 'nu.studer.jooq' version '10.0'
 }
+
+group = 'com.omnia'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -9,7 +12,7 @@ repositories {
 
 ext {
     postgresqlVersion = '42.7.5'
-    jooqVersion = '3.20.2'
+    jooqVersion = '3.19.7'
     snakeyamlVersion = '2.4'
     hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
@@ -17,11 +20,14 @@ ext {
 
 
 dependencies {
-    // PostgreSQL driver
+    // Runtime database connection
     implementation "org.postgresql:postgresql:$postgresqlVersion"
 
-    // Jooq
+    // JOOQ
     implementation "org.jooq:jooq:$jooqVersion"
+
+    // JOOQ code generation from SQL files
+    jooqGenerator "org.jooq:jooq-meta-extensions:$jooqVersion"
 
     // SnakeYAML
     implementation "org.yaml:snakeyaml:$snakeyamlVersion"
@@ -39,13 +45,22 @@ jooq {
         main {
             generationTool {
                 jdbc {
-                    driver = 'org.h2.Driver' // Using H2 for code generation
-                    url = 'jdbc:h2:mem:test;MODE=PostgreSQL;INIT=RUNSCRIPT FROM \'src/main/resources/schema.sql\''
+                    driver = 'org.h2.Driver'
+                    url = 'jdbc:h2:mem:generator;MODE=PostgreSQL'
                 }
                 generator {
                     database {
-                        name = 'org.jooq.meta.h2.H2Database'
-                        includes = '.*'
+                        name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                        properties {
+                            property {
+                                key = 'scripts'
+                                value = 'src/main/resources/schema.sql'
+                            }
+                            property {
+                                key = 'dialect'
+                                value = 'POSTGRES'
+                            }
+                        }
                     }
                     target {
                         packageName = 'com.omnia.jooq'
@@ -53,6 +68,14 @@ jooq {
                     }
                 }
             }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java', 'build/generated-src/jooq/main'
         }
     }
 }
