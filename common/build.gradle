@@ -22,6 +22,8 @@ ext {
 dependencies {
     // Runtime database connection
     implementation "org.postgresql:postgresql:$postgresqlVersion"
+
+    // JOOQ
     implementation "org.jooq:jooq:$jooqVersion"
 
     // JOOQ code generation from SQL files
