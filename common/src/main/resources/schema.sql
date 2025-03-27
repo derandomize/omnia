@@ -1,5 +1,12 @@
 CREATE TABLE index_to_commune
 (
-    index   VARCHAR(255) PRIMARY KEY,
-    commune VARCHAR(255) NOT NULL
+    index   VARCHAR PRIMARY KEY,
+    commune VARCHAR NOT NULL
+);
+
+
+CREATE TABLE omnia_config
+(
+    key   VARCHAR PRIMARY KEY,
+    value VARCHAR
 );
