@@ -10,18 +10,12 @@ ext {
     snakeyamlVersion = '2.4'
     hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
-    jcommanderVersion = '2.0'
-    postgresqlVersion = "42.7.5"
 }
 
+
 dependencies {
-    implementation project(":common")
-
-    // JCommander
-    implementation "org.jcommander:jcommander:$jcommanderVersion"
-
-    // PostgreSQL JDBC
-    implementation "org.postgresql:postgresql:$postgresqlVersion"
+    // SnakeYAML
+    implementation "org.yaml:snakeyaml:$snakeyamlVersion"
 
     // HikariCP
     implementation "com.zaxxer:HikariCP:$hikariVersion"
