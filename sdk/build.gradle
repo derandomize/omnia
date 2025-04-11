@@ -15,6 +15,10 @@ ext {
     hikariVersion = '6.2.1'
     junitVersion = '5.12.0'
     opensearchVersion = '2.9.0'
+    testcontainersVersion = '1.20.6'
+    httpClientVersion = '4.5.13'
+    postgresqlDriverVersion = '42.7.3'
+    opensearchtestcontainersVersion = '2.1.3'
 }
 
 dependencies {
@@ -28,10 +32,24 @@ dependencies {
 
     // OpenSearch
     implementation "org.opensearch.client:opensearch-java:$opensearchVersion"
+    implementation "org.opensearch.client:opensearch-rest-client:$opensearchVersion"
 
-    // JUnit 5
+    // Apache HttpClient
+    implementation "org.apache.httpcomponents:httpclient:$httpClientVersion"
+
+    // Testing
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.12.0"
+
+    // Test Containers
+    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
+    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
+    testImplementation "org.testcontainers:postgresql:$testcontainersVersion"
+    testImplementation "org.opensearch:opensearch-testcontainers:$opensearchtestcontainersVersion"
+
+    // PostgreSQL Driver
+    testRuntimeOnly "org.postgresql:postgresql:$postgresqlDriverVersion"
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
