@@ -44,4 +44,3 @@ java {
 test {
     useJUnitPlatform()
 }
-

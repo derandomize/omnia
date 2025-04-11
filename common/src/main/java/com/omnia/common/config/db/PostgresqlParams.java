@@ -13,7 +13,7 @@ public class PostgresqlParams implements DatabaseParams {
         PostgresqlParams postgresqlParams = new PostgresqlParams();
         postgresqlParams.setHost((String) params.get("host"));
         postgresqlParams.setPort((Integer) params.get("port"));
-        postgresqlParams.setDatabase_name((String) params.get("database_name"));
+        postgresqlParams.setDatabaseName((String) params.get("database_name"));
         postgresqlParams.setUsername((String) params.get("username"));
         postgresqlParams.setPassword((String) params.get("password"));
         return postgresqlParams;
@@ -32,7 +32,10 @@ public class PostgresqlParams implements DatabaseParams {
     public void setPort(Integer port) { this.port = port; }
 
     public String getDatabaseName() { return databaseName; }
-    public void setDatabase_name(String databaseName) { this.databaseName = databaseName; }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
