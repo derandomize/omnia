@@ -9,7 +9,7 @@ public class Config {
         return preferLocal;
     }
 
-    public void setPrefer_local(Boolean preferLocal) {
+    public void setPreferLocal(Boolean preferLocal) {
         this.preferLocal = preferLocal;
     }
 
@@ -17,7 +17,7 @@ public class Config {
         return configTableName;
     }
 
-    public void setConfig_table_name(String configTableName) {
+    public void setConfigTableName(String configTableName) {
         this.configTableName = configTableName;
     }
 
@@ -25,7 +25,7 @@ public class Config {
         return featureName;
     }
 
-    public void setFeature_name(String featureName) {
+    public void setFeatureName(String featureName) {
         this.featureName = featureName;
     }
 }

@@ -19,7 +19,7 @@ public class AppConfig {
         return openSearch;
     }
 
-    public void setOpen_search(OpenSearch openSearch) {
+    public void setOpenSearch(OpenSearch openSearch) {
         this.openSearch = openSearch;
     }
 
