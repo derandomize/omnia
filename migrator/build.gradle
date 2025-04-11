@@ -7,15 +7,18 @@ repositories {
 }
 
 ext {
-    junitVersion = '5.12.0'
+    jcommanderVersion = '2.0'
+    postgresqlVersion = "42.7.5"
 }
 
 dependencies {
     implementation project(":common")
 
-    // JUnit 5
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    // JCommander
+    implementation "org.jcommander:jcommander:$jcommanderVersion"
+
+    // PostgreSQL JDBC
+    implementation "org.postgresql:postgresql:$postgresqlVersion"
 }
 
 test {
