@@ -1,2 +1,2 @@
 rootProject.name = 'omnia'
-include 'sdk', 'migrator', 'transport'
+include 'sdk', 'migrator', 'transport', 'common'
