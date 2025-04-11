@@ -37,7 +37,6 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
     @Override
     public Map<String, String> queryParameters(RequestT request) {
         Map<String, String> params = endpoint.queryParameters(request);
-        // украдено из опенсёрч тестов. Работоспособность под вопросом
         Query query = Query.of(q -> q
                 .bool(builder -> {
                     for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -56,7 +55,7 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         processQuery(query,answer);
         return answer;
     }
-    // украдено из гпт чата. работоспособность под вопросом
+    
     private void processQuery(Query query, Map<String, String> result) {
         if (query.isTerm()) {
             TermQuery term = query.term();
