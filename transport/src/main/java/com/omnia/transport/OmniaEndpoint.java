@@ -1,9 +1,10 @@
 package com.omnia.transport;
 
-//import com.omnia.sdk;
 
 import org.opensearch.client.json.JsonpDeserializer;
 import org.opensearch.client.transport.Endpoint;
+
+import com.omnia.sdk.OmniaSDK;
 
 import java.util.List;
 import java.util.Map;
