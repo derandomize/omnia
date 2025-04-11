@@ -72,7 +72,7 @@ public interface OmniaSDK {
      */
     default SearchRequest.Builder createSearchRequestBuilder(String indexId) {
         String communeIndexId = transformIndexId(indexId);
-        Query filter = getIndexFilter(communeIndexId);
+        Query filter = getIndexFilter(indexId);
         return new SearchRequest.Builder()
                 .index(communeIndexId)
                 .query(filter);

@@ -1,5 +1,6 @@
 package com.omnia.common.config.db;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PostgresqlParams implements DatabaseParams {
@@ -17,6 +18,16 @@ public class PostgresqlParams implements DatabaseParams {
         postgresqlParams.setUsername((String) params.get("username"));
         postgresqlParams.setPassword((String) params.get("password"));
         return postgresqlParams;
+    }
+
+    public Map<String, Object> toParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("host", getHost());
+        params.put("port", getPort());
+        params.put("database_name", getDatabaseName());
+        params.put("username", getUsername());
+        params.put("password", getPassword());
+        return params;
     }
 
     @Override
