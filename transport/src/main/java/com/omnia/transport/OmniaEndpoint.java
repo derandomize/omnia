@@ -60,7 +60,7 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
     private void processQuery(Query query, Map<String, String> result) {
         if (query.isTerm()) {
             TermQuery term = query.term();
-            String value = term.value()._toJsonString();
+            String value = term.value().toString();
             result.put(term.field(), value);
         }
         else if (query.isMatch()) {
