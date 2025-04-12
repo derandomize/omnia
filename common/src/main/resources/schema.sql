@@ -1,11 +1,11 @@
-CREATE TABLE index_to_commune
+CREATE TABLE INDEX_TO_COMMUNE
 (
     "index"   VARCHAR PRIMARY KEY,
     "commune" VARCHAR NOT NULL
 );
 
 
-CREATE TABLE omnia_config
+CREATE TABLE OMNIA_CONFIG
 (
     "key"   VARCHAR PRIMARY KEY,
     "value" VARCHAR

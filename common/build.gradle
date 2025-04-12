@@ -11,7 +11,6 @@ repositories {
 }
 
 ext {
-    postgresqlVersion = '42.7.5'
     jooqVersion = '3.19.7'
     snakeyamlVersion = '2.4'
     hikariVersion = '6.2.1'
@@ -20,9 +19,6 @@ ext {
 
 
 dependencies {
-    // Runtime database connection
-    implementation "org.postgresql:postgresql:$postgresqlVersion"
-
     // JOOQ
     implementation "org.jooq:jooq:$jooqVersion"
 
@@ -46,7 +42,6 @@ jooq {
             generationTool {
                 jdbc {
                     driver = 'org.h2.Driver'
-                    url = 'jdbc:h2:mem:generator;MODE=PostgreSQL'
                 }
                 generator {
                     database {
@@ -55,10 +50,6 @@ jooq {
                             property {
                                 key = 'scripts'
                                 value = 'src/main/resources/schema.sql'
-                            }
-                            property {
-                                key = 'dialect'
-                                value = 'POSTGRES'
                             }
                         }
                     }
