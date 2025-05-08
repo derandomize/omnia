@@ -30,8 +30,6 @@ replay_pid*
 # Ignore Gradle GUI config
 gradle-app.setting
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
 
 # Cache of project
 .gradletasknamecache
@@ -40,29 +38,11 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 
-
-# From https://github.com/github/gitignore/blob/master/Java.gitignore
-*.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-
 # From https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 .idea
-gradlew*
-gradle/
 
 ## Plugin-specific files:
 
@@ -111,3 +91,8 @@ Temporary Items
 
 # build
 *build*
+
+## EXCLUSIONS
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
