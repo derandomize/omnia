@@ -31,7 +31,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 public class OmniaSDKPostgreSQLTest {
 
     private static final String FEATURE_NAME = "test-feature";
