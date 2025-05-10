@@ -37,43 +37,14 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
     @Override
     public Map<String, String> queryParameters(RequestT request) {
         Map<String, String> params = endpoint.queryParameters(request);
-        Query query = Query.of(q -> q
-                .bool(builder -> {
-                    for (Map.Entry<String, String> entry : params.entrySet()) {
-                        String key = entry.getKey();
-                        String value = entry.getValue();
-                        builder.filter(f -> f.term(t -> t
-                                .field(key)
-                                .value(v -> v.stringValue(value))
-                        ));
-                    }
-                    return builder;
-                })
-        );
+        QueryMapper mapper = new QueryMapper();
+        Query query = mapper.mapToQuery(params);
         Map<String, String> answer = new HashMap<>();
         query = sdk.addIndexFilter(query, endpoint.requestUrl(request));
-        processQuery(query,answer);
+        mapper.queryToMap(query,answer);
         return answer;
     }
-    
-    private void processQuery(Query query, Map<String, String> result) {
-        if (query.isTerm()) {
-            TermQuery term = query.term();
-            String value = term.value().toString();
-            result.put(term.field(), value);
-        }
-        else if (query.isMatch()) {
-            MatchQuery match = query.match();
-            result.put(match.field(), match.query().toString());
-        }
-        else if (query.isBool()) {
-            BoolQuery bool = query.bool();
-            bool.must().forEach(q -> processQuery(q, result));
-            bool.should().forEach(q -> processQuery(q, result));
-            bool.filter().forEach(q -> processQuery(q, result));
-        }
 
-    }
     @Override
     public boolean hasRequestBody() {
         return endpoint.hasRequestBody();
