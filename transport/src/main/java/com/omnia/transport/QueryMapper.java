@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class QueryMapper {
 
-    public Query mapToQuery(Map<String, String> params){
+    public Query mapToQuery(Map<String, String> params) {
         return Query.of(q -> q
                 .bool(builder -> {
                     for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -30,12 +30,10 @@ public class QueryMapper {
             TermQuery term = query.term();
             String value = term.value().stringValue();
             result.put(term.field(), value);
-        }
-        else if (query.isMatch()) {
+        } else if (query.isMatch()) {
             MatchQuery match = query.match();
             result.put(match.field(), match.query().stringValue());
-        }
-        else if (query.isBool()) {
+        } else if (query.isBool()) {
             BoolQuery bool = query.bool();
             bool.must().forEach(q -> queryToMap(q, result));
             bool.should().forEach(q -> queryToMap(q, result));

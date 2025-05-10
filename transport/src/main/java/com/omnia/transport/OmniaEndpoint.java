@@ -41,7 +41,7 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         Query query = mapper.mapToQuery(params);
         Map<String, String> answer = new HashMap<>();
         query = sdk.addIndexFilter(query, endpoint.requestUrl(request));
-        mapper.queryToMap(query,answer);
+        mapper.queryToMap(query, answer);
         return answer;
     }
 
