@@ -1,4 +1,5 @@
 package com.omnia.transport;
+
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
@@ -11,10 +12,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class QueryMapperTest<RequestT, ResponseT, ErrorT>  {
+public class QueryMapperTest<RequestT, ResponseT, ErrorT> {
     QueryMapper mapper = new QueryMapper();
+
     @Test
-    void mapToQuery_simpleTest(){
+    void mapToQuery_simpleTest() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "Alice");
         params.put("age", "18");
@@ -60,6 +62,7 @@ public class QueryMapperTest<RequestT, ResponseT, ErrorT>  {
         assertEquals("debug", result.get("level"));
         assertEquals("log", result.get("type"));
     }
+
     @Test
     void queryToMap_MatchQueryTest() {
         MatchQuery matchQuery = new MatchQuery.Builder()

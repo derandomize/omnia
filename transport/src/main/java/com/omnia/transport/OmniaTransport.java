@@ -6,6 +6,7 @@ import org.opensearch.client.transport.Transport;
 import org.opensearch.client.transport.TransportOptions;
 
 import com.omnia.sdk.OmniaSDK;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
