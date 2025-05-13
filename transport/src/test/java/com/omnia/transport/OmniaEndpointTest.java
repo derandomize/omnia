@@ -56,7 +56,7 @@ public class OmniaEndpointTest {
              Statement stmt = conn.createStatement()) {
 
             stmt.execute("CREATE TABLE \"INDEX_TO_COMMUNE\" (\"index\" VARCHAR PRIMARY KEY, commune VARCHAR)");
-            stmt.execute("INSERT INTO \"INDEX_TO_COMMUNE\" (\"index\", commune) VALUES ('123', 'commune'), ('456', 'commune') ,('123A', 'commune')");   
+            stmt.execute("INSERT INTO \"INDEX_TO_COMMUNE\" (\"index\", commune) VALUES ('123', 'commune'), ('456', 'commune') ,('123A', 'commune')");
         }
 
         AppConfig appConfig = createTestAppConfig();
