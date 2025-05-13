@@ -46,7 +46,7 @@ public class QueryMapperTest<RequestT, ResponseT, ErrorT> {
 
 
     @Test
-    void queryToMap_simpleBoolQueries() {
+    void queryToMap_simpleBoolQueryTest() {
         QueryMapper mapper = new QueryMapper();
         Map<String, String> result = new HashMap<>();
         Query nestedBool = Query.of(b -> b.bool(bb -> bb
@@ -79,14 +79,13 @@ public class QueryMapperTest<RequestT, ResponseT, ErrorT> {
     }
 
     @Test
-    void queryToMap_termQuerytest() {
+    void queryToMap_termQueryTest() {
         Query query = new Query.Builder()
                 .term(t -> t
                         .field("title")
                         .value(v -> v.stringValue("OpenSearch"))
                 )
                 .build();
-
         Map<String, String> resultMap = new HashMap<>();
         mapper.queryToMap(query, resultMap);
         assertEquals(1, resultMap.size());

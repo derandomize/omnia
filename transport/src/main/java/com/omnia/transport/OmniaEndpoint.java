@@ -1,23 +1,28 @@
 package com.omnia.transport;
 
 
+import org.jooq.Null;
 import org.opensearch.client.json.JsonpDeserializer;
+import org.opensearch.client.json.UnexpectedJsonEventException;
 import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.query_dsl.*;
 import org.opensearch.client.transport.Endpoint;
 
 import com.omnia.sdk.OmniaSDK;
+import org.opensearch.client.transport.JsonEndpoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT> {
+public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT>, JsonEndpoint<RequestT, ResponseT, ErrorT> {
     private final Endpoint<RequestT, ResponseT, ErrorT> endpoint;
     private final OmniaSDK sdk;
 
-    public OmniaEndpoint(Endpoint<RequestT, ResponseT, ErrorT> endpoint, OmniaSDK sdk) {
+    public OmniaEndpoint(Endpoint<RequestT, ResponseT, ErrorT>  endpoint, OmniaSDK sdk) {
         this.endpoint = endpoint;
         this.sdk = sdk;
     }
@@ -29,20 +34,60 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
 
     @Override
     public String requestUrl(RequestT request) throws IllegalArgumentException {
+        List<String> AA = List.of(endpoint.requestUrl(request).split("/"));
         List<String> Indecies = parseUrl(endpoint.requestUrl(request));
-        Indecies = Indecies.stream().map(index -> sdk.transformIndexId(index)).collect(Collectors.toList());
-        return "/" + String.join("%2C", Indecies);
+        List<String> newIndecies = new ArrayList<>();
+        for(var x: Indecies){
+            String newIndex = sdk.transformIndexId(x);
+            if(newIndex== null){
+                newIndecies.add(x);
+                continue;
+            }
+            newIndecies.add(newIndex);
+        }
+        String answer = "/" + String.join("%2C", newIndecies);
+        if(AA.size()<=2){
+            return answer;
+        }
+        answer+="/";
+        for(int i=2;i<AA.size() -1;i++){
+            answer += AA.get(i) + "/";
+        }
+        answer += AA.getLast();
+        return answer;
     }
 
     @Override
     public Map<String, String> queryParameters(RequestT request) {
+        Map<String, String> a =endpoint.queryParameters(request);
+        for (var x: a.keySet()){
+            System.out.println(x +"   "+ a.get(x));
+        }
         Map<String, String> params = endpoint.queryParameters(request);
         QueryMapper mapper = new QueryMapper();
         Query query = mapper.mapToQuery(params);
         Map<String, String> answer = new HashMap<>();
-        query = sdk.addIndexFilter(query, endpoint.requestUrl(request));
+        List<String> Indecies = parseUrl(endpoint.requestUrl(request));
+        for(var x: Indecies) {
+            System.out.println(x+"cacab");
+          //  query = sdk.addIndexFilter(query,x);
+        }
         mapper.queryToMap(query, answer);
+        System.out.println(answer.keySet());
+        for (var x: answer.keySet()){
+            System.out.println(x +"   "+ answer.get(x));
+        }
         return answer;
+    }
+
+    @Override
+    public Map<String, String> headers(RequestT request) {
+        if( endpoint instanceof JsonEndpoint<RequestT,ResponseT,ErrorT>) {
+            return endpoint.headers(request);
+        }
+        else{
+                throw new IllegalArgumentException("Expected JsonEndpooint");
+        }
     }
 
     @Override
@@ -66,6 +111,16 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         if (parsePath.getFirst() == null) {
             throw new IllegalArgumentException();
         }
-        return List.of(parsePath.getFirst().split("%2C"));
+        return List.of(parsePath.get(1).split("%2C"));
+    }
+
+    @Override
+    public JsonpDeserializer<ResponseT> responseDeserializer() {
+        if( endpoint instanceof JsonEndpoint<RequestT,ResponseT,ErrorT>) {
+            return ((JsonEndpoint<RequestT, ResponseT, ErrorT>) endpoint).responseDeserializer();
+        }
+        else{
+            throw new IllegalArgumentException("Expected JsonEndpooint");
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.omnia.transport;
 
 import org.opensearch.client.json.JsonpMapper;
 import org.opensearch.client.transport.Endpoint;
+import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.Transport;
 import org.opensearch.client.transport.TransportOptions;
 
@@ -11,7 +12,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-public class OmniaTransport implements Transport {
+public class OmniaTransport implements OpenSearchTransport {
     private final Transport delegate;
     private final OmniaSDK sdk;
 
