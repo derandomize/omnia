@@ -35,19 +35,18 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
 
     @Override
     public String requestUrl(RequestT request) throws IllegalArgumentException {
-        List<String> AA = List.of(endpoint.requestUrl(request).split("/"));
+        List<String> splitedPath = List.of(endpoint.requestUrl(request).split("/"));
         List<String> Indecies = parseUrl(endpoint.requestUrl(request));
         StringBuilder answer = new StringBuilder("/" + String.join("%2C", Indecies));
-        if (AA.size() <= 2) {
+        if (splitedPath.size() <= 2) {
             return answer.toString();
         }
         answer.append("/");
-        for (int i = 2; i < AA.size() - 1; i++) {
-            answer.append(AA.get(i)).append("/");
+        for (int i = 2; i < splitedPath.size() - 1; i++) {
+            answer.append(splitedPath.get(i)).append("/");
         }
-        answer.append(AA.getLast());
-        String a = answer.toString();
-        return a;
+        answer.append(splitedPath.getLast());
+        return answer.toString();
     }
 
     @Override
