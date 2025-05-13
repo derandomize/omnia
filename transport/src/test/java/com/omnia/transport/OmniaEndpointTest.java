@@ -91,7 +91,7 @@ public class OmniaEndpointTest {
 
 
         OpenSearchTransport transport = new RestClientTransport(restClient, new org.opensearch.client.json.jackson.JacksonJsonpMapper());
-        OpenSearchTransport omniatransport = new OmniaTransport(transport,sdk);
+        OpenSearchTransport omniatransport = new OmniaTransport(transport, sdk);
         return new OpenSearchClient(omniatransport);
     }
 
@@ -119,7 +119,7 @@ public class OmniaEndpointTest {
     @Test
     void testCreateSearchRequestBuilder() throws IOException {
         Query baseQuery = new Query.Builder().matchAll(m -> m).build();
-        SearchRequest request =new SearchRequest.Builder()
+        SearchRequest request = new SearchRequest.Builder()
                 .index("123").query(baseQuery).build();
         SearchResponse<Object> response = openSearchClient.search(request, Object.class);
         assertEquals(1, response.hits().hits().size(), "Should find one document");

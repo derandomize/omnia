@@ -103,13 +103,14 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         return endpoint.errorDeserializer(statusCode);
     }
 
-    public List<String> getIndex(String path){
+    public List<String> getIndex(String path) {
         List<String> parsePath = List.of(path.split("/"));
         if (parsePath.getFirst() == null) {
             throw new IllegalArgumentException();
         }
         return List.of(parsePath.get(1).split("%2C"));
     }
+
     private List<String> parseUrl(String path) {
         List<String> answer = new ArrayList<>();
         for (var x : getIndex(path)) {

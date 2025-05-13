@@ -28,15 +28,15 @@ public class OmniaTransport implements OpenSearchTransport {
     @Override
     public <RequestT, ResponseT, ErrorT> ResponseT performRequest(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) throws IOException {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
-        if(request instanceof SearchRequest){
+        if (request instanceof SearchRequest) {
             Query combinedQuery = ((SearchRequest) request).query();
             List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
-            for(var x: Indexes) {
-                combinedQuery = sdk.addIndexFilter(combinedQuery,x );
+            for (var x : Indexes) {
+                combinedQuery = sdk.addIndexFilter(combinedQuery, x);
             }
-            return delegate.performRequest(((RequestT)new SearchRequest.Builder().query(combinedQuery).index(((SearchRequest) request).index()).build()), customEndpoint, options);
+            return delegate.performRequest(((RequestT) new SearchRequest.Builder().query(combinedQuery).index(((SearchRequest) request).index()).build()), customEndpoint, options);
         }
-        return delegate.performRequest(request,customEndpoint,options);
+        return delegate.performRequest(request, customEndpoint, options);
     }
 
     @Override
