@@ -60,23 +60,15 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
     @Override
     public Map<String, String> queryParameters(RequestT request) {
         Map<String, String> a =endpoint.queryParameters(request);
-        for (var x: a.keySet()){
-            System.out.println(x +"   "+ a.get(x));
-        }
         Map<String, String> params = endpoint.queryParameters(request);
         QueryMapper mapper = new QueryMapper();
         Query query = mapper.mapToQuery(params);
         Map<String, String> answer = new HashMap<>();
         List<String> Indecies = parseUrl(endpoint.requestUrl(request));
         for(var x: Indecies) {
-            System.out.println(x+"cacab");
-          //  query = sdk.addIndexFilter(query,x);
+          // query = sdk.addIndexFilter(query,x);
         }
         mapper.queryToMap(query, answer);
-        System.out.println(answer.keySet());
-        for (var x: answer.keySet()){
-            System.out.println(x +"   "+ answer.get(x));
-        }
         return answer;
     }
 
