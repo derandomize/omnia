@@ -42,6 +42,14 @@ public class OmniaTransport implements OpenSearchTransport {
     @Override
     public <RequestT, ResponseT, ErrorT> CompletableFuture<ResponseT> performRequestAsync(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
+        if (request instanceof SearchRequest) {
+            Query combinedQuery = ((SearchRequest) request).query();
+            List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
+            for (var x : Indexes) {
+                combinedQuery = sdk.addIndexFilter(combinedQuery, x);
+            }
+            return delegate.performRequestAsync(((RequestT) new SearchRequest.Builder().query(combinedQuery).index(((SearchRequest) request).index()).build()), customEndpoint, options);
+        }
         return delegate.performRequestAsync(request, customEndpoint, options);
     }
 
