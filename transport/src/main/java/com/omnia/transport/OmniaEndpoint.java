@@ -7,6 +7,7 @@ import org.opensearch.client.json.UnexpectedJsonEventException;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.query_dsl.*;
+import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.transport.Endpoint;
 
 import com.omnia.sdk.OmniaSDK;
@@ -36,40 +37,46 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
     public String requestUrl(RequestT request) throws IllegalArgumentException {
         List<String> AA = List.of(endpoint.requestUrl(request).split("/"));
         List<String> Indecies = parseUrl(endpoint.requestUrl(request));
-        List<String> newIndecies = new ArrayList<>();
-        for (var x : Indecies) {
-            String newIndex = sdk.transformIndexId(x);
-            if (newIndex == null) {
-                newIndecies.add(x);
-                continue;
-            }
-            newIndecies.add(newIndex);
-        }
-        String answer = "/" + String.join("%2C", newIndecies);
+        StringBuilder answer = new StringBuilder("/" + String.join("%2C", Indecies));
         if (AA.size() <= 2) {
-            return answer;
+            return answer.toString();
         }
-        answer += "/";
+        answer.append("/");
         for (int i = 2; i < AA.size() - 1; i++) {
-            answer += AA.get(i) + "/";
+            answer.append(AA.get(i)).append("/");
         }
-        answer += AA.getLast();
-        return answer;
+        answer.append(AA.getLast());
+        String a = answer.toString();
+        return a;
     }
 
     @Override
     public Map<String, String> queryParameters(RequestT request) {
+        /*
         Map<String, String> a = endpoint.queryParameters(request);
+        for(var x: a.keySet()){
+            System.out.println(x+" "+a.get(x));
+        }
         Map<String, String> params = endpoint.queryParameters(request);
         QueryMapper mapper = new QueryMapper();
         Query query = mapper.mapToQuery(params);
         Map<String, String> answer = new HashMap<>();
-        List<String> Indecies = parseUrl(endpoint.requestUrl(request));
+        List<String> parsePath = List.of(endpoint.requestUrl(request).split("/"));
+        List<String> Indecies = List.of(parsePath.get(1).split("%2C"));
         for (var x : Indecies) {
-            // query = sdk.addIndexFilter(query,x);
+            if(request instanceof SearchRequest) {
+                query = sdk.addIndexFilter(query, x);
+                // Проблема. Кажется, что endpoint.queryParameters не все параметры Query -> если добавлять в endpoint.queryParameters лишнее падаем с исключением от RestTransport
+            }
         }
+
         mapper.queryToMap(query, answer);
+        for(var x: answer.keySet()){
+              System.out.println("Answer: "+x+" "+answer.get(x));
+        }
         return answer;
+         */
+        return endpoint.queryParameters(request);
     }
 
     @Override
@@ -96,13 +103,24 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         return endpoint.errorDeserializer(statusCode);
     }
 
-    //Вероятно это не правда... я не уверен
-    private List<String> parseUrl(String path) {
+    public List<String> getIndex(String path){
         List<String> parsePath = List.of(path.split("/"));
         if (parsePath.getFirst() == null) {
             throw new IllegalArgumentException();
         }
         return List.of(parsePath.get(1).split("%2C"));
+    }
+    private List<String> parseUrl(String path) {
+        List<String> answer = new ArrayList<>();
+        for (var x : getIndex(path)) {
+            String newIndex = sdk.transformIndexId(x);
+            if (newIndex == null) {
+                answer.add(x);
+                continue;
+            }
+            answer.add(newIndex);
+        }
+        return answer;
     }
 
     @Override
