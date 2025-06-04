@@ -1,23 +1,15 @@
 package com.omnia.transport;
 
 
-import org.jooq.Null;
 import org.opensearch.client.json.JsonpDeserializer;
-import org.opensearch.client.json.UnexpectedJsonEventException;
-import org.opensearch.client.opensearch._types.FieldValue;
-import org.opensearch.client.opensearch._types.OpenSearchException;
-import org.opensearch.client.opensearch._types.query_dsl.*;
-import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.transport.Endpoint;
 
 import com.omnia.sdk.OmniaSDK;
 import org.opensearch.client.transport.JsonEndpoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT>, JsonEndpoint<RequestT, ResponseT, ErrorT> {
     private final Endpoint<RequestT, ResponseT, ErrorT> endpoint;

@@ -1,6 +1,5 @@
 package com.omnia.transport;
 
-import org.opensearch.client.Request;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
