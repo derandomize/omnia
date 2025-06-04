@@ -2,8 +2,6 @@ package com.omnia.transport;
 
 import org.opensearch.client.json.JsonpMapper;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
-import org.opensearch.client.opensearch.core.SearchRequest;
-import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.opensearch.client.transport.Endpoint;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.Transport;
@@ -12,7 +10,6 @@ import org.opensearch.client.transport.TransportOptions;
 import com.omnia.sdk.OmniaSDK;
 
 import javax.annotation.Nullable;
-import javax.crypto.SealedObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +28,7 @@ public class OmniaTransport implements OpenSearchTransport {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
         QueryMapper mapper = new QueryMapper();
         Query combinedQuery = (Query) mapper.executeQuery(request);
-        if(combinedQuery == null){
+        if (combinedQuery == null) {
             return delegate.performRequest(request, customEndpoint, options);
         }
         List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
@@ -41,7 +38,7 @@ public class OmniaTransport implements OpenSearchTransport {
         try {
             mapper.updatePrivateFields(request, combinedQuery);
             return delegate.performRequest(request, customEndpoint, options);
-        } catch (IllegalAccessException |NoSuchFieldException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -51,7 +48,7 @@ public class OmniaTransport implements OpenSearchTransport {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
         QueryMapper mapper = new QueryMapper();
         Query combinedQuery = (Query) mapper.executeQuery(request);
-        if(combinedQuery == null){
+        if (combinedQuery == null) {
             return delegate.performRequestAsync(request, customEndpoint, options);
         }
         List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
@@ -61,7 +58,7 @@ public class OmniaTransport implements OpenSearchTransport {
         try {
             mapper.updatePrivateFields(request, combinedQuery);
             return delegate.performRequestAsync(request, customEndpoint, options);
-        } catch (IllegalAccessException |NoSuchFieldException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
