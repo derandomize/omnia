@@ -7,6 +7,8 @@ import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public class QueryMapper {
@@ -47,17 +49,17 @@ public class QueryMapper {
             throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = target.getClass();
         Field field = findField(clazz);
-            if (field == null) {
-                throw new NoSuchFieldException(
-                        "Field '" + field.getName() + "' not found in class hierarchy");
-            }
-            try {
-                field.setAccessible(true);
-                field.set(target, fieldValues);
-            } catch (SecurityException e) {
-                throw new IllegalAccessException("Security manager blocked access to field: " + e.getMessage());
-            }
+        if (field == null) {
+            throw new NoSuchFieldException(
+                    "Field '" + field.getName() + "' not found in class hierarchy");
         }
+        try {
+            field.setAccessible(true);
+            field.set(target, fieldValues);
+        } catch (SecurityException e) {
+            throw new IllegalAccessException("Security manager blocked access to field: " + e.getMessage());
+        }
+    }
 
     private static Field findField(Class<?> clazz) {
         Class<?> currentClass = clazz;
@@ -71,4 +73,38 @@ public class QueryMapper {
         return null;
     }
 
+    public Object executeQuery(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        try {
+            Method queryMethod = findQueryMethod(obj.getClass());
+            if (queryMethod != null) {
+                queryMethod.setAccessible(true);
+                return queryMethod.invoke(obj);
+            }
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else {
+                throw new RuntimeException("Query method execution failed", cause);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Access denied for query method", e);
+        }
+        return null;
+    }
+
+    private static Method findQueryMethod(Class<?> clazz) {
+        while (clazz != null) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if ("query".equals(method.getName()) && method.getParameterCount() == 0) {
+                    return method;
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return null;
+    }
 }
