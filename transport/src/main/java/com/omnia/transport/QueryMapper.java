@@ -1,10 +1,12 @@
 package com.omnia.transport;
 
+import org.opensearch.client.Request;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 public class QueryMapper {
@@ -40,4 +42,33 @@ public class QueryMapper {
             bool.filter().forEach(q -> queryToMap(q, result));
         }
     }
+
+    public void updatePrivateFields(Object target, Query fieldValues)
+            throws NoSuchFieldException, IllegalAccessException {
+        Class<?> clazz = target.getClass();
+        Field field = findField(clazz);
+            if (field == null) {
+                throw new NoSuchFieldException(
+                        "Field '" + field.getName() + "' not found in class hierarchy");
+            }
+            try {
+                field.setAccessible(true);
+                field.set(target, fieldValues);
+            } catch (SecurityException e) {
+                throw new IllegalAccessException("Security manager blocked access to field: " + e.getMessage());
+            }
+        }
+
+    private static Field findField(Class<?> clazz) {
+        Class<?> currentClass = clazz;
+        while (currentClass != null) {
+            try {
+                return currentClass.getDeclaredField("query");
+            } catch (NoSuchFieldException e) {
+                currentClass = currentClass.getSuperclass();
+            }
+        }
+        return null;
+    }
+
 }

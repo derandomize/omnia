@@ -28,13 +28,19 @@ public class OmniaTransport implements OpenSearchTransport {
     @Override
     public <RequestT, ResponseT, ErrorT> ResponseT performRequest(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) throws IOException {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
+        QueryMapper mapper = new QueryMapper();
         if (request instanceof SearchRequest) {
             Query combinedQuery = ((SearchRequest) request).query();
             List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
             for (var x : Indexes) {
                 combinedQuery = sdk.addIndexFilter(combinedQuery, x);
             }
-            return delegate.performRequest(((RequestT) new SearchRequest.Builder().query(combinedQuery).index(((SearchRequest) request).index()).build()), customEndpoint, options);
+            try {
+                mapper.updatePrivateFields(request, combinedQuery);
+                return delegate.performRequest(request, customEndpoint, options);
+            } catch (IllegalAccessException |NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
         }
         return delegate.performRequest(request, customEndpoint, options);
     }
@@ -42,13 +48,19 @@ public class OmniaTransport implements OpenSearchTransport {
     @Override
     public <RequestT, ResponseT, ErrorT> CompletableFuture<ResponseT> performRequestAsync(RequestT request, Endpoint<RequestT, ResponseT, ErrorT> endpoint, @Nullable TransportOptions options) {
         final OmniaEndpoint<RequestT, ResponseT, ErrorT> customEndpoint = new OmniaEndpoint<>(endpoint, sdk);
+        QueryMapper mapper = new QueryMapper();
         if (request instanceof SearchRequest) {
             Query combinedQuery = ((SearchRequest) request).query();
             List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
             for (var x : Indexes) {
                 combinedQuery = sdk.addIndexFilter(combinedQuery, x);
             }
-            return delegate.performRequestAsync(((RequestT) new SearchRequest.Builder().query(combinedQuery).index(((SearchRequest) request).index()).build()), customEndpoint, options);
+            try {
+                mapper.updatePrivateFields(request, combinedQuery);
+                return delegate.performRequestAsync(request, customEndpoint, options);
+            } catch (IllegalAccessException |NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
         }
         return delegate.performRequestAsync(request, customEndpoint, options);
     }

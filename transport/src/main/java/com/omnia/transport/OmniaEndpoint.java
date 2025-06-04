@@ -51,30 +51,6 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
 
     @Override
     public Map<String, String> queryParameters(RequestT request) {
-        /*
-        Map<String, String> a = endpoint.queryParameters(request);
-        for(var x: a.keySet()){
-            System.out.println(x+" "+a.get(x));
-        }
-        Map<String, String> params = endpoint.queryParameters(request);
-        QueryMapper mapper = new QueryMapper();
-        Query query = mapper.mapToQuery(params);
-        Map<String, String> answer = new HashMap<>();
-        List<String> parsePath = List.of(endpoint.requestUrl(request).split("/"));
-        List<String> Indecies = List.of(parsePath.get(1).split("%2C"));
-        for (var x : Indecies) {
-            if(request instanceof SearchRequest) {
-                query = sdk.addIndexFilter(query, x);
-                // Проблема. Кажется, что endpoint.queryParameters не все параметры Query -> если добавлять в endpoint.queryParameters лишнее падаем с исключением от RestTransport
-            }
-        }
-
-        mapper.queryToMap(query, answer);
-        for(var x: answer.keySet()){
-              System.out.println("Answer: "+x+" "+answer.get(x));
-        }
-        return answer;
-         */
         return endpoint.queryParameters(request);
     }
 
