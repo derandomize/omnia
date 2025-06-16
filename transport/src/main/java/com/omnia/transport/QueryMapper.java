@@ -47,20 +47,20 @@ public class QueryMapper {
     public void updatePrivateFields(Object target, Query fieldValues)
             throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = target.getClass();
-        Field field = findField(clazz);
-        if (field == null) {
+        Field queryField = findQueryField(clazz);
+        if (queryField == null) {
             throw new NoSuchFieldException(
-                    "Field '" + field.getName() + "' not found in class hierarchy");
+                    "Field 'query' not found in class hierarchy");
         }
         try {
-            field.setAccessible(true);
-            field.set(target, fieldValues);
+            queryField.setAccessible(true);
+            queryField.set(target, fieldValues);
         } catch (SecurityException e) {
             throw new IllegalAccessException("Security manager blocked access to field: " + e.getMessage());
         }
     }
 
-    private static Field findField(Class<?> clazz) {
+    private static Field findQueryField(Class<?> clazz) {
         Class<?> currentClass = clazz;
         while (currentClass != null) {
             try {
