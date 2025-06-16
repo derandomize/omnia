@@ -91,13 +91,13 @@ public class OmniaEndpointTest {
 
 
         OpenSearchTransport transport = new RestClientTransport(restClient, new org.opensearch.client.json.jackson.JacksonJsonpMapper());
-        OpenSearchTransport omniatransport = new OmniaTransport(transport, sdk);
-        return new OpenSearchClient(omniatransport);
+        OpenSearchTransport omniaTransport = new OmniaTransport(transport, sdk);
+        return new OpenSearchClient(omniaTransport);
     }
 
     private static void createOpenSearchIndex() throws IOException {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest.Builder()
-                .index("commune")
+                .index("123")
                 .build();
         openSearchClient.indices().create(createIndexRequest);
     }
@@ -107,13 +107,13 @@ public class OmniaEndpointTest {
         document.put(FEATURE_NAME, name);
 
         IndexRequest<Map<String, String>> indexRequest = new IndexRequest.Builder<Map<String, String>>()
-                .index("commune")
+                .index("123")
                 .id(id)
                 .document(document)
                 .build();
 
         openSearchClient.index(indexRequest);
-        openSearchClient.indices().refresh(b -> b.index("commune")); // Refresh to make document searchable
+        openSearchClient.indices().refresh(b -> b.index("123"));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class OmniaEndpointTest {
         Query baseQuery = new Query.Builder().matchAll(m -> m).build();
 
         SearchRequest request = new SearchRequest.Builder()
-                .index("123")
+                .index("456")
                 .query(baseQuery)
                 .build();
 
