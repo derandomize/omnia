@@ -100,6 +100,10 @@ public class OmniaEndpointTest {
                 .index("123")
                 .build();
         openSearchClient.indices().create(createIndexRequest);
+        createIndexRequest = new CreateIndexRequest.Builder()
+                .index("456")
+                .build();
+        openSearchClient.indices().create(createIndexRequest);
     }
 
     private static void indexTestDocument(String name, String id) throws IOException {

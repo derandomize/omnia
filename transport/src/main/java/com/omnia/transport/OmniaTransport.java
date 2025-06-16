@@ -1,6 +1,8 @@
 package com.omnia.transport;
 
 import org.opensearch.client.json.JsonpMapper;
+import org.opensearch.client.opensearch._types.ErrorResponse;
+import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.transport.Endpoint;
 import org.opensearch.client.transport.OpenSearchTransport;
@@ -12,6 +14,7 @@ import com.omnia.sdk.OmniaSDK;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class OmniaTransport implements OpenSearchTransport {
@@ -29,7 +32,15 @@ public class OmniaTransport implements OpenSearchTransport {
         QueryMapper mapper = new QueryMapper();
         Query combinedQuery = (Query) mapper.executeQuery(request);
         if (combinedQuery == null) {
-            return delegate.performRequest(request, customEndpoint, options);
+            try {
+                return delegate.performRequest(request, customEndpoint, options);
+            } catch (OpenSearchException e) {
+                if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                    return null;
+                }
+                throw new OpenSearchException(e.response());
+            }
+
         }
         List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
         for (var x : Indexes) {
@@ -40,6 +51,11 @@ public class OmniaTransport implements OpenSearchTransport {
             return delegate.performRequest(request, customEndpoint, options);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
+        } catch (OpenSearchException e) {
+            if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                return null;
+            }
+            throw new OpenSearchException(e.response());
         }
     }
 
@@ -49,7 +65,14 @@ public class OmniaTransport implements OpenSearchTransport {
         QueryMapper mapper = new QueryMapper();
         Query combinedQuery = (Query) mapper.executeQuery(request);
         if (combinedQuery == null) {
-            return delegate.performRequestAsync(request, customEndpoint, options);
+            try {
+                return delegate.performRequestAsync(request, customEndpoint, options);
+            } catch (OpenSearchException e) {
+                if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                    return null;
+                }
+                throw new OpenSearchException(e.response());
+            }
         }
         List<String> Indexes = customEndpoint.getIndex(endpoint.requestUrl(request));
         for (var x : Indexes) {
@@ -60,6 +83,11 @@ public class OmniaTransport implements OpenSearchTransport {
             return delegate.performRequestAsync(request, customEndpoint, options);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
+        } catch (OpenSearchException e) {
+            if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                return null;
+            }
+            throw new OpenSearchException(e.response());
         }
     }
 
