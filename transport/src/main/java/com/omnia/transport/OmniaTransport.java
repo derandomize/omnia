@@ -4,6 +4,7 @@ import org.opensearch.client.json.JsonpMapper;
 import org.opensearch.client.opensearch._types.ErrorResponse;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
+import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.opensearch.client.transport.Endpoint;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.Transport;
@@ -35,7 +36,7 @@ public class OmniaTransport implements OpenSearchTransport {
             try {
                 return delegate.performRequest(request, customEndpoint, options);
             } catch (OpenSearchException e) {
-                if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                if (Objects.equals(e.error().type(), "resource_already_exists_exception") && request instanceof CreateIndexRequest) {
                     return null;
                 }
                 throw new OpenSearchException(e.response());
@@ -52,7 +53,7 @@ public class OmniaTransport implements OpenSearchTransport {
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         } catch (OpenSearchException e) {
-            if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+            if (Objects.equals(e.error().type(), "resource_already_exists_exception") && request instanceof CreateIndexRequest) {
                 return null;
             }
             throw new OpenSearchException(e.response());
@@ -68,7 +69,7 @@ public class OmniaTransport implements OpenSearchTransport {
             try {
                 return delegate.performRequestAsync(request, customEndpoint, options);
             } catch (OpenSearchException e) {
-                if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+                if (Objects.equals(e.error().type(), "resource_already_exists_exception") && request instanceof CreateIndexRequest) {
                     return null;
                 }
                 throw new OpenSearchException(e.response());
@@ -84,7 +85,7 @@ public class OmniaTransport implements OpenSearchTransport {
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         } catch (OpenSearchException e) {
-            if (Objects.equals(e.error().type(), "resource_already_exists_exception")) {
+            if (Objects.equals(e.error().type(), "resource_already_exists_exception") && request instanceof CreateIndexRequest) {
                 return null;
             }
             throw new OpenSearchException(e.response());
