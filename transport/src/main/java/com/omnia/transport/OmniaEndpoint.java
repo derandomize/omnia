@@ -2,18 +2,16 @@ package com.omnia.transport;
 
 
 import org.opensearch.client.json.JsonpDeserializer;
-import org.opensearch.client.opensearch._types.FieldValue;
-import org.opensearch.client.opensearch._types.query_dsl.*;
 import org.opensearch.client.transport.Endpoint;
 
 import com.omnia.sdk.OmniaSDK;
+import org.opensearch.client.transport.JsonEndpoint;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT> {
+public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<RequestT, ResponseT, ErrorT>, JsonEndpoint<RequestT, ResponseT, ErrorT> {
     private final Endpoint<RequestT, ResponseT, ErrorT> endpoint;
     private final OmniaSDK sdk;
 
@@ -29,51 +27,34 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
 
     @Override
     public String requestUrl(RequestT request) throws IllegalArgumentException {
+        List<String> splitedPath = List.of(endpoint.requestUrl(request).split("/"));
         List<String> Indecies = parseUrl(endpoint.requestUrl(request));
-        Indecies = Indecies.stream().map(index -> sdk.transformIndexId(index)).collect(Collectors.toList());
-        return "/" + String.join("%2C", Indecies);
+        StringBuilder answer = new StringBuilder("/" + String.join("%2C", Indecies));
+        if (splitedPath.size() <= 2) {
+            return answer.toString();
+        }
+        answer.append("/");
+        for (int i = 2; i < splitedPath.size() - 1; i++) {
+            answer.append(splitedPath.get(i)).append("/");
+        }
+        answer.append(splitedPath.getLast());
+        return answer.toString();
     }
 
     @Override
     public Map<String, String> queryParameters(RequestT request) {
-        Map<String, String> params = endpoint.queryParameters(request);
-        Query query = Query.of(q -> q
-                .bool(builder -> {
-                    for (Map.Entry<String, String> entry : params.entrySet()) {
-                        String key = entry.getKey();
-                        String value = entry.getValue();
-                        builder.filter(f -> f.term(t -> t
-                                .field(key)
-                                .value(v -> v.stringValue(value))
-                        ));
-                    }
-                    return builder;
-                })
-        );
-        Map<String, String> answer = new HashMap<>();
-        query = sdk.addIndexFilter(query, endpoint.requestUrl(request));
-        processQuery(query,answer);
-        return answer;
+        return endpoint.queryParameters(request);
     }
-    
-    private void processQuery(Query query, Map<String, String> result) {
-        if (query.isTerm()) {
-            TermQuery term = query.term();
-            String value = term.value().toString();
-            result.put(term.field(), value);
-        }
-        else if (query.isMatch()) {
-            MatchQuery match = query.match();
-            result.put(match.field(), match.query().toString());
-        }
-        else if (query.isBool()) {
-            BoolQuery bool = query.bool();
-            bool.must().forEach(q -> processQuery(q, result));
-            bool.should().forEach(q -> processQuery(q, result));
-            bool.filter().forEach(q -> processQuery(q, result));
-        }
 
+    @Override
+    public Map<String, String> headers(RequestT request) {
+        if (endpoint instanceof JsonEndpoint<RequestT, ResponseT, ErrorT>) {
+            return endpoint.headers(request);
+        } else {
+            throw new IllegalArgumentException("Expected JsonEndpooint");
+        }
     }
+
     @Override
     public boolean hasRequestBody() {
         return endpoint.hasRequestBody();
@@ -89,12 +70,33 @@ public class OmniaEndpoint<RequestT, ResponseT, ErrorT> implements Endpoint<Requ
         return endpoint.errorDeserializer(statusCode);
     }
 
-    //Вероятно это не правда... я не уверен
-    private List<String> parseUrl(String path) {
+    public List<String> getIndex(String path) {
         List<String> parsePath = List.of(path.split("/"));
         if (parsePath.getFirst() == null) {
             throw new IllegalArgumentException();
         }
-        return List.of(parsePath.getFirst().split("%2C"));
+        return List.of(parsePath.get(1).split("%2C"));
+    }
+
+    private List<String> parseUrl(String path) {
+        List<String> answer = new ArrayList<>();
+        for (var x : getIndex(path)) {
+            String newIndex = sdk.transformIndexId(x);
+            if (newIndex == null) {
+                answer.add(x);
+                continue;
+            }
+            answer.add(newIndex);
+        }
+        return answer;
+    }
+
+    @Override
+    public JsonpDeserializer<ResponseT> responseDeserializer() {
+        if (endpoint instanceof JsonEndpoint<RequestT, ResponseT, ErrorT>) {
+            return ((JsonEndpoint<RequestT, ResponseT, ErrorT>) endpoint).responseDeserializer();
+        } else {
+            throw new IllegalArgumentException("Expected JsonEndpooint");
+        }
     }
 }
