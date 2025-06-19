@@ -17,18 +17,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  opensearch:
-    image: opensearchproject/opensearch:2.9.0
-    container_name: omnia-opensearch
-    environment:
-      - cluster.initial_cluster_manager_nodes=omnia-opensearch
-    ports:
-      - "9200:9200"
-      - "9600:9600"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s --fail http://localhost:9200/_cluster/health | grep -v '\"status\":\"red\"'"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
