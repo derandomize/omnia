@@ -151,6 +151,12 @@ public class OmniaSDKPostgreSQLTest {
     }
 
     @Test
+    void testAutoIndexCreation() throws IOException {
+        openSearchClient.indices().create(new CreateIndexRequest.Builder().index("666").build());
+        assertEquals("commune_main", sdk.transformIndexId("666"));
+    }
+
+    @Test
     void testGetFilterField() {
         assertEquals(FEATURE_NAME, sdk.getFilterField(), "Filter field should match feature name from config");
     }
