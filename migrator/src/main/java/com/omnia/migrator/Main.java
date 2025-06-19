@@ -112,7 +112,7 @@ public class Main {
         @Override
         public void execute(Migrator migrator) throws Exception {
             for (String migrateId : migrateIds) {
-                migrator.migrate(CommuneId.fromString(migrateId));
+                migrator.migrate(new CommuneId(migrateId));
             }
         }
     }
