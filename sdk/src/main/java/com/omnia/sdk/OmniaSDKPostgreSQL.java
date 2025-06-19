@@ -43,10 +43,24 @@ public class OmniaSDKPostgreSQL implements OmniaSDK {
 
     @Override
     public String transformIndexId(String indexId) {
-        return dsl.select(IndexToCommune.INDEX_TO_COMMUNE.COMMUNE)
+        String commune = dsl.select(IndexToCommune.INDEX_TO_COMMUNE.COMMUNE)
                 .from(IndexToCommune.INDEX_TO_COMMUNE)
                 .where(IndexToCommune.INDEX_TO_COMMUNE.INDEX.eq(indexId))
                 .fetchOneInto(String.class);
+
+        if (commune != null) {
+            return commune;
+        } else {
+            final String defaultCommune = "commune_main";
+
+            dsl.insertInto(IndexToCommune.INDEX_TO_COMMUNE)
+                    .set(IndexToCommune.INDEX_TO_COMMUNE.INDEX, indexId)
+                    .set(IndexToCommune.INDEX_TO_COMMUNE.COMMUNE, defaultCommune)
+                    .onConflictDoNothing()
+                    .execute();
+
+            return defaultCommune;
+        }
     }
 
     @Override
