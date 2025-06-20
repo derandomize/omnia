@@ -23,13 +23,11 @@ public class Main {
 
         jCommander.parse(args);
 
-        if (arguments.help) {
+        String parsedCommand = jCommander.getParsedCommand();
+        if (arguments.help || parsedCommand == null) {
             jCommander.usage();
             System.exit(0);
         }
-
-        String parsedCommand = jCommander.getParsedCommand();
-
 
         switch (parsedCommand) {
             case InfoCommand.name:
@@ -112,7 +110,7 @@ public class Main {
         @Override
         public void execute(Migrator migrator) throws Exception {
             for (String migrateId : migrateIds) {
-                migrator.migrate(CommuneId.fromString(migrateId));
+                migrator.migrate(new CommuneId(migrateId));
             }
         }
     }

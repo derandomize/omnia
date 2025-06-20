@@ -4,6 +4,7 @@ import com.omnia.common.config.AppConfig;
 
 import java.util.List;
 
+
 public interface Migrator extends AutoCloseable {
     /**
      * Gets Migrator instance from AppConfig
@@ -12,7 +13,7 @@ public interface Migrator extends AutoCloseable {
      * @return Migrator
      */
     static Migrator getInstance(AppConfig config) {
-        throw new UnsupportedOperationException("getInstance method is not yet implemented");
+        return new MigratorImpl(config);
     }
 
     /**
