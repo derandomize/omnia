@@ -42,6 +42,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MigratorImpl implements Migrator {
+    private static final int MAX_DOCUMENTS_PER_COMMUNE = 1000;
+    private static final int HIKARI_MAXIMUM_POOL_SIZE = 10;
+    private static final int HIKARI_MINIMUM_IDLE = 2;
+    private static final int HIKARI_CONNECTION_TIMEOUT = 30000;
+    private static final int HIKARI_IDLE_TIMEOUT = 600000;
+    private static final int HIKARI_MAX_LIFETIME = 1800000;
+
+
     private static final Logger logger = LoggerFactory.getLogger(MigratorImpl.class);
 
     private final AppConfig config;
@@ -75,11 +83,11 @@ public class MigratorImpl implements Migrator {
         hikariConfig.setUsername(params.getUsername());
         hikariConfig.setPassword(params.getPassword());
         hikariConfig.setDriverClassName("org.postgresql.Driver");
-        hikariConfig.setMaximumPoolSize(10);
-        hikariConfig.setMinimumIdle(2);
-        hikariConfig.setConnectionTimeout(30000);
-        hikariConfig.setIdleTimeout(600000);
-        hikariConfig.setMaxLifetime(1800000);
+        hikariConfig.setMaximumPoolSize(HIKARI_MAXIMUM_POOL_SIZE);
+        hikariConfig.setMinimumIdle(HIKARI_MINIMUM_IDLE);
+        hikariConfig.setConnectionTimeout(HIKARI_CONNECTION_TIMEOUT);
+        hikariConfig.setIdleTimeout(HIKARI_IDLE_TIMEOUT);
+        hikariConfig.setMaxLifetime(HIKARI_MAX_LIFETIME);
 
         return new HikariDataSource(hikariConfig);
     }
@@ -165,7 +173,6 @@ public class MigratorImpl implements Migrator {
         try {
             logger.info("Transferring index {} from commune {} to {}", indexId, from, to);
 
-            // Get all documents from the source commune that belong to this index
             List<Map<String, Object>> documents = getDocumentsForIndex(from, indexId);
 
             if (documents.isEmpty()) {
@@ -173,13 +180,8 @@ public class MigratorImpl implements Migrator {
                 return;
             }
 
-            // Add documents to target commune
             addDocumentsToCommune(to, indexId, documents);
-
-            // Remove documents from source commune
             removeDocumentsFromCommune(from, indexId);
-
-            // Update index-to-commune mapping
             updateIndexCommuneMapping(indexId, to);
 
             logger.info("Successfully transferred {} documents for index {} from {} to {}",
@@ -226,7 +228,6 @@ public class MigratorImpl implements Migrator {
             List<CommuneId> overflownCommunes = new ArrayList<>();
             long threshold = config.getConfig().getThreshold();
 
-            // Get all commune indices
             List<CommuneId> allCommunes = getAllCommunes();
 
             for (CommuneId commune : allCommunes) {
@@ -324,7 +325,7 @@ public class MigratorImpl implements Migrator {
                                 .value(FieldValue.of(indexId.value()))
                         )
                 )
-                .size(10000) // Adjust based on your needs
+                .size(MAX_DOCUMENTS_PER_COMMUNE)
         );
 
 
