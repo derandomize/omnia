@@ -1,5 +1,3 @@
 package com.omnia.migrator;
 
-public class IndexId {
-    private String id;
-}
+public record IndexId(String value) {}
