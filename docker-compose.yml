@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: omnia-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: omnia
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./common/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - omnia-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  opensearch:
+    image: opensearchproject/opensearch:2.9.0
+    container_name: omnia-opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      # Security settings - minimum necessary
+      - plugins.security.disabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - omnia-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s --insecure -u 'admin:admin' https://localhost:9200/_cluster/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+
+  migrator:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: omnia-migrator
+    depends_on:
+      postgres:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    environment:
+      - CONFIG_PATH=/app/config.yml
+      - DAEMON_INTERVAL=3600
+    volumes:
+      - migrator_logs:/var/log
+      - ./docker/config.yml:/app/config.yml
+    networks:
+      - omnia-network
+    command: daemon start
+
+networks:
+  omnia-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  opensearch_data:
+  migrator_logs:
