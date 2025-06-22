@@ -1,0 +1,15 @@
+open_search:
+  host: opensearch
+  port: 9200
+  username: admin
+  password: admin
+  scheme: https
+  ssl_verification: false
+
+database:
+  type: postgresql
+  host: postgres
+  port: 5432
+  username: postgres
+  password: postgres
+  database: omnia
