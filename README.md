@@ -1,5 +1,7 @@
 # Omnia
 
+[![Build Status](https://github.com/derandomize/omnia/actions/workflows/gradle-tests.yml/badge.svg)](https://github.com/derandomize/omnia/actions/workflows/gradle-tests.yml)
+
 *A Transparent Scaling Layer for OpenSearch*
 
 Omnia addresses a critical challenge in OpenSearch: the performance degradation and operational complexity that arise when managing tens or hundreds of thousands of indices (soft limit is 1000 and hard limit is 10000), . This is a common scenario in multi-tenant architectures where each tenant is provisioned with a dedicated index.
