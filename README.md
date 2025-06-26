@@ -2,7 +2,8 @@
 
 [![Build Status](https://github.com/derandomize/omnia/actions/workflows/gradle-tests.yml/badge.svg)](https://github.com/derandomize/omnia/actions/workflows/gradle-tests.yml)
 
-![Project Logo](assets/logo.png){width="200px"}
+<img src="assets/logo.png" alt="Project Logo" style="width: 200px; height: auto;">
+
 
 *A Transparent Scaling Layer for OpenSearch*
 
